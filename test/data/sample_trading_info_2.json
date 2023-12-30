@@ -1,0 +1,93 @@
+{
+  "creation_date": "2023-08-24",
+  "correspondent": "LPCA",
+  "account_no": "xxx",
+  "master_account_no": "xxx",
+  "account_name": "<account name>",
+  "representative": "Alpaca",
+  "currency": "USD",
+  "trade_activities": [
+    {
+      "symbol": "CDNS",
+      "side": "sell",
+      "qty": "-34",
+      "price": "230.57",
+      "gross_amount": "-7839.38",
+      "fees": [],
+      "net_amount": "-7839.38",
+      "trade_date": "2023-08-23",
+      "trade_time": "10:45:00.103",
+      "settle_date": "2023-08-25",
+      "asset_type": "E",
+      "note": "",
+      "status": "executed",
+      "capacity": "agency",
+      "execution_id": "30823000016516400000"
+    },
+    {
+      "symbol": "CDNS",
+      "side": "sell",
+      "qty": "-69",
+      "price": "230.57",
+      "gross_amount": "-15909.33",
+      "fees": [],
+      "net_amount": "-15909.33",
+      "trade_date": "2023-08-23",
+      "trade_time": "10:45:00.104",
+      "settle_date": "2023-08-25",
+      "asset_type": "E",
+      "note": "",
+      "status": "executed",
+      "capacity": "agency",
+      "execution_id": "30823000016516400001"
+    },
+    {
+      "symbol": "CDNS",
+      "side": "buy",
+      "qty": "103",
+      "price": "232.57",
+      "gross_amount": "23954.71",
+      "fees": [],
+      "net_amount": "23954.71",
+      "trade_date": "2023-08-23",
+      "trade_time": "11:15:20.104",
+      "settle_date": "2023-08-25",
+      "asset_type": "E",
+      "note": "",
+      "status": "executed",
+      "capacity": "agency",
+      "execution_id": "30823000110189100000"
+    },
+    {
+      "symbol": "CDNS",
+      "side": "sell",
+      "qty": "-103",
+      "price": "233.7",
+      "gross_amount": "-24071.1",
+      "fees": [],
+      "net_amount": "-24071.1",
+      "trade_date": "2023-08-23",
+      "trade_time": "12:12:18.74",
+      "settle_date": "2023-08-25",
+      "asset_type": "E",
+      "note": "",
+      "status": "executed",
+      "capacity": "agency",
+      "execution_id": "23082206923046276"
+    }
+  ],
+  "fee_activities": [
+    {
+      "entry_type": "FEE",
+      "gross_amount": "0.39",
+      "description": "REG fee for proceed of $47819.81 on 2023-08-23 by 899603974",
+      "status": "executed"
+    },
+    {
+      "entry_type": "FEE",
+      "gross_amount": "0.03",
+      "description": "TAF fee for proceed of 206 shares (3 trades) on 2023-08-23 by 899603974",
+      "status": "executed"
+    }
+  ]
+}

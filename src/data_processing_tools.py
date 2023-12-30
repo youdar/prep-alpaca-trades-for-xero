@@ -18,10 +18,10 @@ cols = ['*Date',
 
 
 class TradeConfirmationTools:
-    def __init__(self, json_dir: str = ''):
+    def __init__(self, json_dir: str = '', destination_dir: str = ''):
         self.cols = cols
         self.json_dir = json_dir if json_dir else TRADES_JSON_DIR
-        self.destination_dir = DESTINATION_DIR
+        self.destination_dir = destination_dir if destination_dir else DESTINATION_DIR
         self.collected_json_df = pd.DataFrame(self.cols)
 
     def read_json_files(self) -> pd.DataFrame:
@@ -69,3 +69,32 @@ class TradeConfirmationTools:
 
         self.collected_json_df = pd.DataFrame(rows, columns=self.cols)
         return self.collected_json_df
+
+    def write_excel_monthly_data(self, destination_dir: str = '') -> str:
+        """
+        1. Check that self.collected_json_df is not empty
+        2. Write to destination_dir files `YYYY-MM Statement.xlsx` where
+           `YYYY-MM` is the year and month of self.collected_json_df['*Date'].
+           The Excel file should not include the index, but it should include the column names
+
+        Returns:
+            destination_dir
+        """
+        destination_dir = destination_dir if destination_dir else self.destination_dir
+        if not self.collected_json_df.empty:
+            self.collected_json_df['*Date'] = pd.to_datetime(self.collected_json_df['*Date'])
+
+            # Group by year and month
+            grouped = self.collected_json_df.groupby(self.collected_json_df['*Date'].dt.to_period('M'))
+            periods = []
+            for period, group in grouped:
+                file_name = f'{period.strftime("%Y-%m")} Statement.xlsx'
+                file_path = os.path.join(destination_dir, file_name)
+
+                # Write group to Excel file
+                group.sort_values(by='*Date', inplace=True)
+                group['*Date'] = group['*Date'].dt.strftime('%m/%d/%Y')
+                group.to_excel(file_path, index=False)
+                periods.append(period.strftime("%Y-%m"))
+        periods.sort()
+        return destination_dir, periods

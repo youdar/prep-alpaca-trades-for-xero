@@ -28,7 +28,10 @@ Consider doing this only at the end of each month.
    - Check the Statement for `Cost and Fees`
    - Check the Statement for `Dividend`
    - Add those to the Excel with the proper account info, see image in the [References](## References) below
-3. Once the Excel is up-to-date, save it as a `CSV` file, so the it can be imported to XERO  
+3. VERY IMPORTANT: the dates on the JSON might not be exactly as the statements. This is important particularly  
+   for the start of the year and the end of the year.  
+   For example I see trades that were made on 12/29/23 showing in Jan 2024. 
+4. Once the Excel is up-to-date, save it as a `CSV` file, so the it can be imported to XERO  
 
 
 ## References

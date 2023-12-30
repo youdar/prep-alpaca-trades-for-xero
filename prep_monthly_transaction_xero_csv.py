@@ -1,4 +1,5 @@
 import pandas as pd
+from src import TradeConfirmationTools
 
 pd.set_option('display.width', 800)
 pd.set_option('display.max_columns', 60)
@@ -13,3 +14,16 @@ Excel files have the columns:
 """
 
 
+def prep_monthly_transaction_xero_csv():
+    o = TradeConfirmationTools()
+    print(f"Collecting data from {o.json_dir}")
+    df = o.read_json_files()
+    print(f"Collected data size: {df.shape}")
+    print(f"Creating Excel files in {o.destination_dir}")
+    _, periods = o.write_excel_monthly_data()
+    print(f"Collected periods {', '.join(periods)}")
+    print('Done...')
+
+
+if __name__ == '__main__':
+    prep_monthly_transaction_xero_csv()
