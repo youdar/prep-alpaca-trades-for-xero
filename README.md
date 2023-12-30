@@ -9,8 +9,38 @@ to build CSV files that can be imported into XERO.
 
 Consider doing this only at the end of each month.
 
-#### Data collection:
+### Data collection:
 1. Go to Alpaca [https://app.alpaca.markets/account/documents](https://app.alpaca.markets/account/documents)
 2. filter for `Account statement` and download to a folder like `Doc YYYY/statements`
+3. create a file `src/config.py` that contains: 
+   - `TRADES_JSON_DIR = '<path to trade confirmation JSON files>`  
+   - `DESTINATION_DIR = '<path to output excel files>`  
+4. In the Alpaca documents page, filter for `Trade confirmation JSON` and   
+   Download all the files to `TRADES_JSON_DIR`  
 
-Process steps:
+### Process steps:
+1. Create monthly Excel files `YYYY-MM Statement.xlsx`
+   - Run `...`  
+     This will save excel files to `DESTINATION_DIR`
+2. Adjust Excel files for other transactions 
+   - Open each month statement PDF and `YYYY-MM Statement.xlsx`
+   - Check the Statement for any Added/Removed funds
+   - Check the Statement for `Cost and Fees`
+   - Check the Statement for `Dividend`
+   - Add those to the Excel with the proper account info, see image in the [References](## References) below
+3. Once the Excel is up-to-date, save it as a `CSV` file, so the it can be imported to XERO  
+
+
+## References
+The Excel/CVS files need to look like:  
+![cvs_file_sample](docs/cvs_file_sample.png)   
+CSV file columns: `*Date`, `*Amount`, `Payee`, `Description`, `Reference`, `Transaction Type`, `Account Code`, `Tax Rate`
+
+Account codes need to match your XERO account codes:
+- `3110` : `Equity` - Owner's Capital: Owner's Investment
+- `4716` : `Revenue` - Alpaca Trade Transactions
+- `7151` : `Expense` - Alpaca Trading fees
+
+
+
+   
