@@ -11,6 +11,9 @@ Save monthly `YYYY-MM Statement.xlsx` to /src/config.py DESTINATION_DIR
 
 Excel files have the columns:
 *Date, *Amount, Payee, Description, Reference, Transaction Type, Account Code, Tax Rate
+
+Example:
+python3 python3 prep_monthly_transaction_xero_csv.py
 """
 
 
