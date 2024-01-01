@@ -53,7 +53,7 @@ Account codes need to match your XERO account codes:
 
 - Get the code from GitHub: https://github.com/youdar/prep-alpaca-trades-for-xero
 - You need to have python 3.8 or better.
-- You can either git clone the code or download the ZIP file and extract it in the place you want to run it
+- You can either use git clone the code or download the ZIP file and extract it in the place you want to run it
 - In the place you downloaded this tool to, CD to `src` directory and create `config.py` that contains:
     - `TRADES_JSON_DIR = '<path to trade confirmation JSON files>`
     - `DESTINATION_DIR = '<path to output excel files>` 
