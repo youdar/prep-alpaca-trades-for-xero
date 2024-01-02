@@ -62,7 +62,7 @@ class TradeConfirmationTools:
                     for ta in data['trade_activities']:
                         row = {
                             '*Date': ta['trade_date'],
-                            '*Amount': - ta['gross_amount'],
+                            '*Amount': - float(ta['gross_amount']),
                             'Description': f" {ta['side']} {ta['qty']} {ta['symbol']} for {ta['price']}",
                             'Payee': 'Alpaca Securities LLC',
                             'Tax Rate': 'Tax Exempt',
