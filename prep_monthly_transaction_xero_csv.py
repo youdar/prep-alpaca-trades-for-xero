@@ -21,10 +21,10 @@ def prep_monthly_transaction_xero_csv():
     o = TradeConfirmationTools()
     print(f"Collecting data from {o.json_dir}")
     df = o.read_json_files()
-    print(f"Collected data size: {df.shape}")
+    print(f"Num of transactions collected: {df.shape[0]}")
     print(f"Creating Excel files in {o.destination_dir}")
     _, periods = o.write_excel_monthly_data()
-    print(f"Collected periods {', '.join(periods)}")
+    print(f"Collected months {', '.join(periods)}")
     print('Done...')
 
 

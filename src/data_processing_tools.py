@@ -46,17 +46,22 @@ class TradeConfirmationTools:
             collected_json_df
         """
         json_file_list = [f for f in os.listdir(self.json_dir) if f.endswith('.json')]
+        json_file_list.sort()
         rows = []
+        print("\nProcessing files:")
+        i = 1
         for file_name in json_file_list:
             file_path = os.path.join(self.json_dir, file_name)
 
             with open(file_path, 'r') as file:
                 data = json.load(file)
 
-                if 'creation_date' in data and 'trade_activities' in data:
+                if 'trade_activities' in data:
+                    print(f"{i:3}: {file_name}")
+                    i += 1
                     for ta in data['trade_activities']:
                         row = {
-                            '*Date': data['creation_date'],
+                            '*Date': ta['trade_date'],
                             '*Amount': ta['gross_amount'],
                             'Description': f" {ta['side']} {ta['qty']} {ta['symbol']} for {ta['price']}",
                             'Payee': 'Alpaca Securities LLC',
