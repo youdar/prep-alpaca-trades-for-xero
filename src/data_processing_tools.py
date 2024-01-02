@@ -92,7 +92,7 @@ class TradeConfirmationTools:
                 file_path = os.path.join(destination_dir, file_name)
 
                 # Write group to Excel file
-                group.sort_values(by='*Date', inplace=True)
+                group.sort_values(by=['*Date', 'Description'], inplace=True)
                 group['*Date'] = group['*Date'].dt.strftime('%m/%d/%Y')
                 group.to_excel(file_path, index=False)
                 periods.append(period.strftime("%Y-%m"))
