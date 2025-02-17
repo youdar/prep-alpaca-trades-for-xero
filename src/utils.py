@@ -174,17 +174,11 @@ def read_trades_info(dt: str, save_to_file: bool = False) -> pd.DataFrame:
     # Each fill has attributes like: transaction_time, side, qty, symbol, price, net_amount, etc.
     for fill in fills:
         trade_time = fill.transaction_time
-        trade_time = trade_time.strftime('%H:%M')
         date_str = trade_time.strftime('%m/%d/%y')
-
-        # If side is buy => negative amount; if sell => positive amount
-        # The fill.net_amount is already + for sell, - for buy, but let's confirm
-        # According to Alpaca docs, net_amount can be positive or negative,
-        # but let's ensure it matches typical accounting for buys/sells.
-        amount = float(fill.net_amount)  # should be negative if buy, positive if sell
         qty = float(fill.qty)
         px = float(fill.price)
         side = fill.side  # "buy" or "sell"
+        amount = qty * px * ((side == 'sell') - (side == 'buy'))
         description = f"{side} {int(qty)} {fill.symbol} for {px:.2f}"
         tx_type = "buy/sell"
         payee = "Alpaca Securities LLC"
@@ -211,14 +205,7 @@ def read_trades_info(dt: str, save_to_file: bool = False) -> pd.DataFrame:
 
     # Each div might have fields like: net_amount, date_paid, etc.
     for div in divs:
-        # Use date_paid or transaction_time to get the date
-        # According to Alpaca, 'transaction_time' might be present, or 'date' might hold the date.
-        # We'll just parse transaction_time if it exists:
-        if div.transaction_time is not None:
-            div_time = div.transaction_time.strftime('%H:%M')
-        else:
-            div_time = '00:00'
-        date_str = div_time.strftime('%m/%d/%y')
+        date_str = div.transaction_time.strftime('%m/%d/%y')
         amount = float(div.net_amount)  # typically > 0 for dividend
 
         row = {
@@ -256,13 +243,7 @@ def read_trades_info(dt: str, save_to_file: bool = False) -> pd.DataFrame:
             pass  # some activity_types might not exist or not be supported
 
     for nt in non_trades:
-        # parse date
-        if nt.transaction_time is not None:
-            nt_time = date_parser.parse(nt.transaction_time)
-        else:
-            # fallback to 'date'
-            nt_time = date_parser.parse(nt.date)
-        date_str = nt_time.strftime('%m/%d/%y')
+        date_str = nt.transaction_time.strftime('%m/%d/%y')
         amount = float(nt.net_amount)
 
         # Distinguish between "FEE", "TRANS"/"WIRE" (add funds?), "JNLC"/"JNLS"?
