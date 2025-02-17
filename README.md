@@ -11,7 +11,7 @@ to build CSV files that can be imported into XERO.
 Consider doing this only at the end of each month.
 
 ### Data collection:
-
+#### Option 1
 1. Go to Alpaca [https://app.alpaca.markets/account/documents](https://app.alpaca.markets/account/documents)
 2. filter for `Account statement` and download to a folder like `Doc YYYY/statements`
 3. In the place you downloaded this tool to, CD to `src` directory and create `config.py` that contains:
@@ -35,6 +35,11 @@ Consider doing this only at the end of each month.
    for the start of the year and the end of the year.  
    For example I see trades that were made on 12/29/23 showing in Jan 2024.
 4. Once the Excel is up-to-date, save it as a `CSV` file, so the it can be imported to XERO
+
+#### Option 2
+1. Use [create_csv_using_apis.py](create_csv_using_apis.py) to collect trades info and create the CSV  
+   using Alpaca API.  
+2. Compare to the statements, to make sure it worked well.
 
 ## References
 

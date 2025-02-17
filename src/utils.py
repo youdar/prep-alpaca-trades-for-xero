@@ -73,22 +73,22 @@ def print_month_summary(df: pd.DataFrame):
 
     # Convert the 'Date' column to datetime and extract the month period.
     try:
-        date_dt = pd.to_datetime(df['Date'], format='%m/%d/%y', errors='coerce')
+        date_dt = pd.to_datetime(df['*Date'], format='%m/%d/%y', errors='coerce')
         unique_months = [x.__str__() for x in date_dt.dt.to_period('M').unique()]
         unique_months.sort()
     except Exception as e:
-        print("Error parsing dates in 'Date' column:", e)
+        print("Error parsing dates in '*Date' column:", e)
         unique_months = set()
 
     unique_months = ', '.join(unique_months)
     print(f"Monthly Summary for {unique_months}:")
 
     # Group by 'Transaction Type' and summarize
-    summary = df.groupby('Transaction Type')['Amount'].agg(['count', 'sum']).reset_index()
+    summary = df.groupby('Transaction Type')['*Amount'].agg(['count', 'sum']).reset_index()
     print("Summary by Transaction Type:")
     print(summary)
 
-    overall_total = df['Amount'].sum()
+    overall_total = df['*Amount'].sum()
     print(f"\nOverall Total account changes: {overall_total:.2f}")
 
 
@@ -99,7 +99,7 @@ def compute_fill_amount(row):
         side = row.get('side', '').lower()
         # If side is 'sell', factor = +1; if 'buy', factor = -1.
         factor = 1 if side == 'sell' else -1
-        return qty * price * factor
+        return round(qty * price, 2) * factor
     else:
         return float(row.get('net_amount', 0))
 
@@ -111,7 +111,10 @@ def read_trades_info(dt: str, save_to_file: bool = False) -> pd.DataFrame:
     """
     year, month = map(int, dt.split('-'))
     start_date = datetime(year, month, 1)
-    end_date = (start_date + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+    next_month = (month + 1 % 13)
+    next_month = month + 1 if month < 12 else 1
+    next_year = year + 1 if month == 12 else year
+    end_date = datetime(next_year, next_month, 1)
 
     NY = 'America/New_York'
     after_str = pd.Timestamp(start_date, tz=NY).isoformat()
@@ -131,16 +134,24 @@ def read_trades_info(dt: str, save_to_file: bool = False) -> pd.DataFrame:
     # Attempt to fetch all activity types in separate calls (some older versions of the SDK don't allow a single list)
     all_activities = []
     for a_type in ACTIVITY_MAPPING.keys():
-        try:
-            acts = api.get_activities(
-                activity_types=a_type,
-                after=after_str,
-                until=before_str
-            )
-            all_activities.extend(acts)
-        except Exception as e:
-            # It may throw if there's no activity or if that type is unsupported
-            pass
+        page_token = None  # Initialize page_token for each activity type
+        while True:
+            try:
+                response = api.get_activities(
+                    activity_types=a_type,
+                    after=after_str,
+                    until=before_str,
+                    page_token=page_token,
+                    page_size=100
+                )
+                if not response:
+                    break  # Exit loop if no activities are returned
+                all_activities.extend(response)
+                # The page_token for the next page is the ID of the last activity in the current response
+                page_token = response[-1].id
+            except Exception as e:
+                print(f"Error fetching activities for type {a_type}: {e}")
+                break
 
     # Convert to DataFrame
     data = [act._raw for act in all_activities]
@@ -151,12 +162,13 @@ def read_trades_info(dt: str, save_to_file: bool = False) -> pd.DataFrame:
 
     # Convert transaction_time to datetime
     mask = df['date'].isnull() | (df['date'].astype(str).str.strip() == '')
-    df.loc[mask, 'Date'] = pd.to_datetime(df.loc[mask, 'transaction_time'], errors='coerce').dt.strftime('%m/%d/%y')
-    df.loc[~mask, 'Date'] = pd.to_datetime(df.loc[~mask, 'date'], errors='coerce').dt.strftime('%m/%d/%y')
+    if 'transaction_time' in df.columns:
+        df.loc[mask, '*Date'] = pd.to_datetime(df.loc[mask, 'transaction_time'], errors='coerce').dt.strftime('%m/%d/%y')
+    df.loc[~mask, '*Date'] = pd.to_datetime(df.loc[~mask, 'date'], errors='coerce').dt.strftime('%m/%d/%y')
 
     # net_amount is your inflow/outflow. Typically negative for buys, positive for sells, etc.
-    df['Amount'] = pd.to_numeric(df['net_amount'], errors='coerce')
-    df['Amount'] = df.apply(compute_fill_amount, axis=1)
+    df['*Amount'] = pd.to_numeric(df['net_amount'], errors='coerce')
+    df['*Amount'] = df.apply(compute_fill_amount, axis=1)
 
     # Map activity types -> (Transaction Type, Default Account Code)
     def map_activity_type(a_type):
@@ -185,7 +197,7 @@ def read_trades_info(dt: str, save_to_file: bool = False) -> pd.DataFrame:
             return "Interest"
         elif a_type == 'FEE':
             return "Cost and Fees"
-        elif a_type in ['CSD', 'CSW', 'TRANS', 'WIRE', 'ACATC', 'ACATS', 'JNLC', 'JNLS', 'JNL']:
+        elif a_type in ['CSD', 'CSW', 'TRANS', 'ACATC', 'ACATS', 'JNLC', 'JNLS', 'JNL']:
             # deposits / withdrawals / transfers / journals
             return a_type
         return a_type  # fallback
@@ -201,13 +213,13 @@ def read_trades_info(dt: str, save_to_file: bool = False) -> pd.DataFrame:
     df['Tax Rate'] = 'Tax Exempt'
 
     # Final columns for Xero
-    df = df[['Date', 'Amount', 'Payee', 'Description', 'Reference', 'Transaction Type', 'Account Code', 'Tax Rate']]
+    df = df[['*Date', '*Amount', 'Payee', 'Description', 'Reference', 'Transaction Type', 'Account Code', 'Tax Rate']]
 
     # Sort by Date ascending
-    df.sort_values('Date', inplace=True)
+    df.sort_values('*Date', inplace=True)
 
     if save_to_file:
-        out_file_name = f'/Users/youval/Library/CloudStorage/OneDrive-Personal/yquark/Docs {year}/statements/{dt} statement.csv'
+        out_file_name = f'/Users/youval/Google Drive/yquark/Docs {year}/statements/{dt} statement.csv'
         df.to_csv(out_file_name, index=False)
         print(f"Saved CSV to {out_file_name}")
 
