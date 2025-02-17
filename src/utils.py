@@ -99,7 +99,8 @@ def compute_fill_amount(row):
         side = row.get('side', '').lower()
         # If side is 'sell', factor = +1; if 'buy', factor = -1.
         factor = 1 if side == 'sell' else -1
-        return round(qty * price, 2) * factor
+        amount = round(qty * price, 2)
+        return amount * factor
     else:
         return float(row.get('net_amount', 0))
 
@@ -165,6 +166,7 @@ def read_trades_info(dt: str, save_to_file: bool = False) -> pd.DataFrame:
     if 'transaction_time' in df.columns:
         df.loc[mask, '*Date'] = pd.to_datetime(df.loc[mask, 'transaction_time'], errors='coerce').dt.strftime('%m/%d/%y')
     df.loc[~mask, '*Date'] = pd.to_datetime(df.loc[~mask, 'date'], errors='coerce').dt.strftime('%m/%d/%y')
+    df['*Date'] = df['*Date'].fillna(method='ffill').fillna(method='bfill')
 
     # net_amount is your inflow/outflow. Typically negative for buys, positive for sells, etc.
     df['*Amount'] = pd.to_numeric(df['net_amount'], errors='coerce')
