@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "prep-alpaca-trades-for-xero"
+version = "0.0.1"
+description = "prep alpaca trades for xero"
+authors = ["youval dar <youval@yquark.com>"]
+readme = "README.md"
+
+packages = [
+    { include = "src" },
+]
+
+[virtualenvs]
+in-project = false
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.13"
+pandas = "*"
+alpaca-trade-api = ">=3.2.0"
+lxml = "*"
+pyarrow = "*"
+openpyxl = "*"
+certifi = "*"
+
+[tool.poetry.dev-dependencies]
+"my_secrets" = { path = "/Users/youval/Documents/projects/secrets/", develop = true }
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
