@@ -214,9 +214,7 @@ def read_trades_info(dt: str, save_to_file: bool = False) -> pd.DataFrame:
     return df
 
 
-if __name__ == "__main__":
-    dt = "2024-01"
-    save_to_file = False
-    df_result = read_trades_info(dt, save_to_file=save_to_file)
-    print("\n----- Month Summary -----")
-    print_month_summary(df_result)
+__all__ = [
+    'print_month_summary',
+    'read_trades_info',
+]
