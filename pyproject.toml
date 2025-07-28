@@ -20,9 +20,7 @@ lxml = "*"
 pyarrow = "*"
 openpyxl = "*"
 certifi = "*"
-
-[tool.poetry.dev-dependencies]
-"my_secrets" = { path = "/Users/youval/Documents/projects/secrets/", develop = true }
+"my_secrets" = { path = "../projects/secrets/", develop = true }
 
 [build-system]
 requires = ["poetry-core"]
